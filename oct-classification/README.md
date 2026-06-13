@@ -1,4 +1,3 @@
-https://www.kaggle.com/competitions/optical-coherence-tomography-classification
 # Классификация изображений оптической когерентной томографии (ОКТ)
 
 ## Описание задачи
