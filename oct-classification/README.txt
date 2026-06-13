@@ -1,47 +1,47 @@
-# 🏥 OCT Image Classification
-**Optical Coherence Tomography Image Classification for Retinal Disease Diagnosis**
+https://www.kaggle.com/competitions/optical-coherence-tomography-classification
+# Классификация изображений оптической когерентной томографии (ОКТ)
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-1.9+-ee4c2c.svg)](https://pytorch.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## Описание задачи
+Проект выполнен в рамках учебного соревнования на Kaggle. Цель — реализовать классификацию медицинских снимков ОКТ на 4 класса и превзойти базовое решение (Accuracy > 0.90).
 
-## 📋 Table of Contents
-- [Overview](#-overview)
-- [Dataset](#-dataset)
-- [Methodology](#-methodology)
-- [Results](#-results)
-- [Acknowledgments](#-acknowledgments)
+**Классы в датасете:**
+* `CNV` (Хориоидальная неоваскуляризация)
+* `DME` (Диабетический макулярный отек)
+* `DRUSEN` (Друзы)
+* `NORMAL` (Норма)
 
-## 🎯 Overview
-This project is a deep learning solution for OCT image classification, developed as part of a research-oriented learning task. The goal is to classify retinal images into **CNV, DME, DRUSEN, and NORMAL** categories.
+**Ссылка на соревнование и датасет:** [Kaggle Competition Ссылка](<https://www.kaggle.com/competitions/optical-coherence-tomography-classification>)
 
-## 📊 Dataset
-The dataset includes retinal OCT images divided into:
-* CNV (0)
-* DME (1)
-* DRUSEN (2)
-* NORMAL (3)
+---
 
-## ⚙️ Methodology
-### Data Augmentation
-...
-### Handling Class Imbalance
-...
-### Training Strategy
-...
+## Что было сделано
 
-## Results
-| Metric | Value |
-|--------|-------|
-| **Best Validation Accuracy** | **96.17%** |
-| **Best Validation Loss** | **0.0379** |
-| **Best Training Accuracy** | 76.82% |
-| **Training Time** | 1h 32m 22s |
+Для достижения высокого качества и борьбы с особенностями медицинского датасета были применены следующие подходы:
 
-## Training Log Summary
-| Epoch | Val Acc | Val Loss |
-|-------|---------|----------|
-| 1 | 0.9291 | 0.0733 |
-| ... | ... | ... |
-| 4 | **0.9617** | **0.0379** |
-| ... | ... | ... |
+1. **Архитектура модели:** Использована предобученная сверточная нейросеть **EfficientNet-B0**, как оптимальный баланс между скоростью обучения и качеством.
+2. **Борьба с дисбалансом классов:** 
+   * Реализован `WeightedRandomSampler` для корректного формирования батчей во время обучения.
+   * Вместо стандартной кросс-энтропии использована функция потерь **Focal Loss**, которая штрафует модель за уверенность в простых классах и заставляет фокусироваться на редких/сложных.
+3. **Регуляризация и генерализация:**
+   * Применена аугментация данных (Albumentations) для обучающей выборки.
+   * Использован метод **Mixup** (смешивание картинок и их таргетов), что помогло снизить переобучение.
+4. **Оптимизация:** Настроен подбор скорости обучения с помощью `Optimizer` и динамического изменения шага (`Scheduler`).
+5. **Продвинутая валидация (TTA):** На этапе тестирования применена технология **Test Time Augmentation (TTA)**, что позволило усреднить предсказания по слегка измененным копиям снимков и повысить стабильность модели.
+
+---
+
+## Результаты
+
+### Валидационная выборка (Classification Report):
+
+```text
+              precision    recall  f1-score   support
+
+         CNV       0.99      0.95      0.97      7460
+         DME       0.92      0.98      0.95      2329
+      DRUSEN       0.76      0.98      0.86      1761
+      NORMAL       1.00      0.97      0.98     10111
+
+    accuracy                           0.96     21661
+   macro avg       0.92      0.97      0.94     21661
+weighted avg       0.97      0.96      0.96     21661
